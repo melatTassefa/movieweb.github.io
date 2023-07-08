@@ -1,0 +1,346 @@
+<html>
+    <head>
+        <link rel= "stylesheet" href="css/bootstrap.min.css">    
+        <!--<link rel= "stylesheet" href="bootstrap-utilities.min.css">  -->
+    </head>
+    <body>
+        <script src ="js/bootstrap.bundle.min.js"></script>
+        <div class="container-fluid" id="main">
+            <div class="row" id="par">
+                <div class="col m-3">
+                    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                        <div class="container-fluid">
+                          <a class="navbar-brand" href="#">MVD</a>
+                          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                          </button>
+                          <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                              <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" href="#">About</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" href="#">Login</a>
+                              </li>
+                              <!--<li class="nav-item">
+                                <a class="nav-link disabled">Disabled</a>
+                              </li>-->
+                            </ul>
+                          </div>
+                        </div>
+                      </nav>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    <h3>Welcome to MVD!</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 m-3">
+                    <button type="button" class="btn btn-secondary btn-lg" id="btn1">Movies</button>
+                    <button type="button" class="btn btn-secondary btn-lg" id="btn2">Shows</button>
+                </div>
+                <div class="col-lg-3">
+                    <label for="exampleFormControlInput1" class="form-label">Search</label>
+                    <input type="Search" id="textBox" onsearch= "searchMovies()">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 m-3">
+                    <label for="genre" class="btn btn-secondary btn-sm">Genre</label>
+                    <select name="genre" id="gnr">
+                      <option value="gn" disabled selected value>Genre</option>
+                      <option value="1" id="act">Action</option>
+                      <option value="2" id="com">Comedy</option>
+                      <option value="3" id="rom">Romance</option>
+                      <option value="4" id="trl">Thriller</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row" id="search_result">
+
+            </div>
+            <div class="row" id="result">
+          
+            </div>
+        </div>
+        <script>
+        let gnr = document.getElementById('gnr');
+        let act = document.getElementById('act');
+        let com = document.getElementById('com');
+        let rom = document.getElementById('rom');
+        let trl = document.getElementById('trl');
+        let main = document.getElementById('result');
+        let srch_res = document.getElementById('search_result');
+        let replace = document.getElementsByClassName('col-2 m-1 card');
+        let repset = [];
+        
+        document.getElementById('btn1').addEventListener('click', movieData = () =>{
+        //let moviePoster = [];
+        var url1 = 'https://api.themoviedb.org/3/trending/movie/day?language=en-US&api_key=a3f2239d8c5b87b05b73b8c869445655';
+        fetch(url1)
+        .then((response) => response.json())
+        .then((data) => getResult(data,main))
+            
+    //})
+    .catch((error) => {
+        console.log('Error:', error);
+    });
+} )
+let list = [];
+document.getElementById('btn2').addEventListener('click', showData = () =>{
+        var url2 = 'https://api.tvmaze.com/shows';
+        fetch(url2)
+        .then((response) => response.json())
+        .then(dec = (data) =>{
+            for(let i=0;i<20;i++){
+             list.push(data[i])   
+            }
+            console.log(list)
+        } )
+        .then((data) => getshowResult(list,main))
+            
+    //})
+    .catch((error) => {
+        console.log('Error:', error);
+    });
+} )
+function searchMovies(){
+                    let variable_from_html_search = document.getElementById('textBox').value;
+                    url2 = 'https://api.themoviedb.org/3/search/movie?query='+variable_from_html_search+'&include_adult=false&language=en-US&page=1&api_key=a3f2239d8c5b87b05b73b8c869445655';
+                    fetch(url2)
+                    .then((response) => response.json())
+                    .then((data) => getResult(data,srch_res))
+                    .catch((error) => {
+                        console.log('Error:', error);
+                    });
+                }
+            function genredata(urlx, gnr_value){
+                let actlist=[];
+                let comlist=[];
+                let romlist=[];
+                let thrlist=[];
+                console.log("MEEEEEEEEE")
+                urlx = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&sort_by=popularity.desc&api_key=a3f2239d8c5b87b05b73b8c869445655'
+                    fetch(urlx)
+                    .then((response) => response.json())
+            
+
+                    //ADD IF STATEMENT!!!!!!!
+                    .then(checkResult = (data) =>{
+                        if(gnr_value == 1){
+                            for(let i=0;i<data.results.length;i++){
+                            for(let j=0;j<data.results[i].genre_ids.length;j++){
+                                if(data.results[i].genre_ids[j] == 28){
+                                actlist.push(data.results[i])
+                                //
+                                console.log(actlist.length)
+                            }
+                            }
+                            //console.log('RRRRRR')
+                        }
+                        getGenreResult(actlist,srch_res)
+                        }
+                        else if(gnr_value == 2){
+                            for(let i=0;i<data.results.length;i++){
+                            for(let j=0;j<data.results[i].genre_ids.length;j++){
+                                if(data.results[i].genre_ids[j] == 35){
+                                comlist.push(data.results[i])
+                                //
+                                //console.log(actlist.length)
+                            }
+                            }
+                            //console.log('RRRRRR')
+                        }
+                        getGenreResult(comlist,srch_res)
+                        }
+                        else if(gnr_value == 3){
+                            for(let i=0;i<data.results.length;i++){
+                            for(let j=0;j<data.results[i].genre_ids.length;j++){
+                                if(data.results[i].genre_ids[j] == 10749){
+                                romlist.push(data.results[i])
+                                //
+                                //console.log(actlist.length)
+                            }
+                            }
+                            //console.log('RRRRRR')
+                        }
+                        getGenreResult(romlist,srch_res)
+                        }
+                        else if(gnr_value == 4){
+                            for(let i=0;i<data.results.length;i++){
+                            for(let j=0;j<data.results[i].genre_ids.length;j++){
+                                if(data.results[i].genre_ids[j] == 53){
+                                thrlist.push(data.results[i])
+                                //
+                                //console.log(actlist.length)
+                            }
+                            }
+                            //console.log('RRRRRR')
+                        }
+                        getGenreResult(thrlist,srch_res)
+                        }
+
+                    })
+                    //.then((data) => getResult(data,srch_res))
+                    .catch((error) => {
+                        console.log('Error:', error);
+                    });
+                }
+        getResult = (data2, parent) => {
+            let main2 = document.getElementById('par2');
+            for(let i=0;i<data2.results.length;i++){
+                console.log(data2.results[i]);
+                //let container1 = document.createElement('div');
+                //container1.setAttribute('class', 'col-lg-3');
+                let card = document.createElement('div');
+                card.setAttribute('class', 'col-2 m-1 card');
+                card.setAttribute('id', 'card'+ i);
+                card.style = 'style="width: 15rem height: 25rem"';
+                let img = document.createElement('img');
+                img.classList.add('card-img-top');
+                img.src = 'https://image.tmdb.org/t/p/original/'+data2.results[i].poster_path;
+                let title = document.createElement('h5');
+                title.setAttribute('class','card-title');
+                title.textContent = data2.results[i].title;
+                let button2 = document.createElement('a');
+                button2.setAttribute('class','btn btn-primary');
+                button2.textContent = 'Movie Detail';
+                let btn2 = document.getElementsByClassName('btn btn-primary');
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(button2);
+                parent.appendChild(card);
+               /* btn2[i].addEventListener('click', getDetail = () =>{
+                    let detail1 = document.createElement('p');
+                    detail1.setAttribute('class', 'text-end');
+                    let cont2 = document.createElement('div')
+                    cont2.setAttribute('class', 'col-3');
+                    detail1.textContent = data2.results[i].title + ' ' + 'has grossed ' + data2.Search[i].gross + ' and is currently ranking at ' + data2.Search[i].rank + 'th place. It made around ' + data2.Search[i].weekend + ' over the weekend.' ;
+                    cont2.appendChild(detail1);
+                    //detail1.style.textAlign = "right";
+                    
+                    main.appendChild(cont2);
+                })*/
+                }
+               // textBox.oninput = searchMovies;
+              /*  function searchMovies(){
+                    let variable_from_html_search = document.getElementById('textBox').value;
+                    url2 = 'http://www.omdbapi.com/?apikey=d940f4c6&s=*'+variable_from_html_search+'*&page=1';
+                    fetch(url2)
+                    .then((response) => response.json())
+                    .then(getResult(data))
+                    .catch((error) => {
+                        console.log('Error:', error);
+                    });
+                }*/
+            }
+            getshowResult = (data2, parent) => {
+            let main2 = document.getElementById('par2');
+            for(let i=0;i<data2.length;i++){
+                console.log(data2[i]);
+                //let container1 = document.createElement('div');
+                //container1.setAttribute('class', 'col-lg-3');
+                let card = document.createElement('div');
+                card.setAttribute('class', 'col-2 m-1 card');
+                card.setAttribute('id', 'card'+ i);
+                card.style = 'style="width: 15rem height: 25rem"';
+                let img = document.createElement('img');
+                img.classList.add('card-img-top');
+                img.src = data2[i].image.original;
+                let title = document.createElement('h5');
+                title.setAttribute('class','card-title');
+                title.textContent = data2[i].name;
+                let button2 = document.createElement('a');
+                button2.setAttribute('class','btn btn-primary');
+                button2.textContent = 'Movie Detail';
+                let btn2 = document.getElementsByClassName('btn btn-primary');
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(button2);
+                //parent.appendChild(card);
+                parent.innerHTML = card;
+                btn2[i].addEventListener('click', getDetail = () =>{
+                    let detail1 = document.createElement('p');
+                    detail1.setAttribute('class', 'text-end');
+                    let cont2 = document.createElement('div')
+                    cont2.setAttribute('class', 'col-3');
+                    detail1.textContent = data2.Search[i].title + 'has grossed ' + data2.Search[i].gross + ' and is currently ranking at ' + data2.Search[i].rank + 'th place. It made around ' + data2.Search[i].weekend + ' over the weekend.' ;
+                    cont2.appendChild(detail1);
+                    //detail1.style.textAlign = "right";
+                    main.appendChild(cont2);
+                })
+                }
+            }
+                getGenreResult = (data2, parent) => {
+            let main2 = document.getElementById('par2');
+            for(let i=0;i<data2.length;i++){
+                console.log(data2[i]);
+                //let container1 = document.createElement('div');
+                //container1.setAttribute('class', 'col-lg-3');
+                let card = document.createElement('div');
+                card.setAttribute('class', 'col-2 m-1 card');
+                card.setAttribute('id', 'card'+ i);
+                card.style = 'style="width: 15rem height: 25rem"';
+                let img = document.createElement('img');
+                img.classList.add('card-img-top');
+                img.src = 'https://image.tmdb.org/t/p/original/'+data2[i].poster_path;
+                let title = document.createElement('h5');
+                title.setAttribute('class','card-title');
+                title.textContent = data2[i].title;
+                let button2 = document.createElement('a');
+                button2.setAttribute('class','btn btn-primary');
+                button2.textContent = 'Movie Detail';
+                let btn2 = document.getElementsByClassName('btn btn-primary');
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(button2);
+                parent.appendChild(card);
+                btn2[i].addEventListener('click', getDetail = () =>{
+                    let detail1 = document.createElement('p');
+                    detail1.setAttribute('class', 'text-end');
+                    let cont2 = document.createElement('div')
+                    cont2.setAttribute('class', 'col-3');
+                    detail1.textContent = data2.Search[i].title + ' ' + 'has grossed ' + data2.Search[i].gross + ' and is currently ranking at ' + data2.Search[i].rank + 'th place. It made around ' + data2.Search[i].weekend + ' over the weekend.' ;
+                    cont2.appendChild(detail1);
+                    //detail1.style.textAlign = "right";
+                    main.appendChild(cont2);
+                })
+                }
+            }
+               // textBox.oninput = searchMovies;
+              /*  function searchMovies(){
+                    let variable_from_html_search = document.getElementById('textBox').value;
+                    url2 = 'http://www.omdbapi.com/?apikey=d940f4c6&s=*'+variable_from_html_search+'*&page=1';
+                    fetch(url2)
+                    .then((response) => response.json())
+                    .then(getResult(data))
+                    .catch((error) => {
+                        console.log('Error:', error);
+                    });
+                }*/
+            gnr.addEventListener("change", findgenre=()=>{
+                if(parseInt(gnr.value) == 1){
+                    //console.log("Hello")
+                    genredata('https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&sort_by=popularity.desc&api_key=a3f2239d8c5b87b05b73b8c869445655',gnr.value)
+                }
+                else if(parseInt(gnr.value) == 2){
+                    //console.log("HHHHH");
+                    genredata('https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&sort_by=popularity.desc&api_key=a3f2239d8c5b87b05b73b8c869445655',gnr.value)
+                }
+                else if(parseInt(gnr.value) == 3){
+                    //console.log("HHHHH");
+                    genredata('https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&sort_by=popularity.desc&api_key=a3f2239d8c5b87b05b73b8c869445655',gnr.value)
+                }
+                else if(parseInt(gnr.value) == 4){
+                    //console.log("HHHHH");
+                    genredata('https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&sort_by=popularity.desc&api_key=a3f2239d8c5b87b05b73b8c869445655',gnr.value)
+                }
+            })
+        </script>
+    </body>
+</html>
